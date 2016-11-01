@@ -1,5 +1,5 @@
 
-function [a,a_prime,psi,lambda1,lambda2] = sub(r,V,a_old,a_prime_old)
+function [a,a_prime,psi,lambda1,lambda2,S] = sub(r,V,a_old,a_prime_old)
 global pdata;
 
 
@@ -13,7 +13,7 @@ a_new = a_old;
 a_prime_new = a_prime_old;
 
 % Iteration of a and a'
-while (abs(error_a) >= 0.00001) || (abs(error_a_prime) >= 0.00001)
+while (abs(error_a) >= 0.0001) || (abs(error_a_prime) >= 0.0001)
     psi = atan( (V/( pdata.big_omega*r)) * ((1+a_new)/(1-a_prime_new)) );
     % Getting the Cl and Cd
     [Cl,Cd] = naca16_509_m06(Beta-psi);

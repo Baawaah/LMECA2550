@@ -59,11 +59,10 @@ pdata.a(1)       = 0.4;
 pdata.a_prime(1) = 0.4;
 % %% =============
 %Sucre syntaxique
-M               = pdata.M;
 r               = 1.7; %parameter
 z               = pdata.z;
 omega           = pdata.omega; 
-B               = pdata.B; % Number of Blade
+%B               = pdata.B; % Number of Blade
 chord           = pdata.chord; % Chord length
 big_omega       = pdata.big_omega;
 Beta0           = pdata.Beta0;
@@ -71,16 +70,16 @@ R               = pdata.R;
 V               = pdata.V;% [m/s]
 
 
-p_ref0 = 2*pi*0.75*R*tan(Beta0);
-Beta = atan(p_ref0/(2*pi*r));
-
-a_old       = 0.2;
-a_prime_old = 0.1;
-error_a       = 1; % error between a's
-error_a_prime = 1;
-
-a_new = a_old;
-a_prime_new = a_prime_old;
+% p_ref0 = 2*pi*0.75*R*tan(Beta0);
+% Beta = atan(p_ref0/(2*pi*r));
+% 
+% a_old       = 0.2;
+% a_prime_old = 0.1;
+% error_a       = 1; % error between a's
+% error_a_prime = 1;
+% 
+% a_new = a_old;
+% a_prime_new = a_prime_old;
 
 % % Iteration of a and a'
 % while (abs(error_a) >= 0.00001) || (abs(error_a_prime) >= 0.00001)
@@ -109,13 +108,25 @@ a_prime_new = a_prime_old;
 %  disp([a_new,a_prime_new,error_a,error_a_prime,psi]);
 
 
-% %% TEST ZONE 
-% n = pdata.n;
-% D = 2*pdata.R;
-% tspan = [0.1,R];
-% r0 = 0.1;
-% [r,y] = ode45(@(r,y) fprime(r), tspan, r0);
-% T = sum(y);
-% kt = T/(ro*n*n*(D^4));
-% J = V/(n*D);
-%[a,a_prime,psi,lambda1,lambda2]= sub(1.7,110,0.2,0.2)
+%% Gauss-Legendre
+A = [0.1,1.7]; % Interval
+n = 100;
+h = 1/n;
+X = [0.7746 0 -0.7746];
+W = [0.5556 0.8889 0.5556];
+L = A(2)-A(1);
+B = linspace(A(1),A(2),n);
+
+M = linspace(0,1,10);
+
+for j = 1 : length(M);
+ V(j) = M(j)*sqrt(gamma*(p0/ro));
+ acc = 0;
+ for i = 1 : length(B)-1
+  alpha = (B(i+1)-B(i))/2;
+  beta  = (B(i+1)+B(i))/2; 
+  T(j) =  alpha*( W(1)*fTprime( alpha*X(1) + beta,V(j)) + W(2)*fTprime( alpha*X(2) + beta,V(j)) + W(3)*fTprime( alpha*X(3) + beta,V(j))) + acc;
+ end
+end
+J = V./(n*pdata.R*2);
+plot(J,T);
