@@ -69,64 +69,29 @@ Beta0           = pdata.Beta0;
 R               = pdata.R;
 V               = pdata.V;% [m/s]
 
-
-% p_ref0 = 2*pi*0.75*R*tan(Beta0);
-% Beta = atan(p_ref0/(2*pi*r));
-% 
-% a_old       = 0.2;
-% a_prime_old = 0.1;
-% error_a       = 1; % error between a's
-% error_a_prime = 1;
-% 
-% a_new = a_old;
-% a_prime_new = a_prime_old;
-
-% % Iteration of a and a'
-% while (abs(error_a) >= 0.00001) || (abs(error_a_prime) >= 0.00001)
-%     psi = atan( ( V/(big_omega*r)) * ((1+a_new)/(1-a_prime_new)) );
-%     % Getting the Cl and Cd
-%     [Cl,Cd] = naca16_509_m06(Beta-psi);
-%     % Computation of S
-%     S = (B*chord)/(2*pi*r);
-%     % Computation of lambda1 and lambda2
-%     lambda1 = (Cl*cos(psi)) - (Cd*sin(psi));
-%     lambda2 = (Cl*sin(psi)) + (Cd*cos(psi));    
-%     % Computation of a and a'
-%     a_new_young       = (1 + a_new      )*(0.5)*S*lambda1/(1-cos(2*psi));
-%     a_prime_new_young = (1 - a_prime_new)*(0.5)*S*lambda2/(  sin(2*psi));
-%     % Relaxing the value
-%     a_new       = (1-omega)* a_old       + omega*a_new_young;
-%     a_prime_new = (1-omega)* a_prime_old + omega*a_prime_new_young;
-%     % Error computation
-%     error_a       = a_new - a_old;
-%     error_a_prime = a_prime_new - a_prime_old;
-%     a_old = a_new;
-%     a_prime_old = a_prime_new;
-% end
-%  
-%  disp('       a        a_p       err_a    err_a_p   psi');
-%  disp([a_new,a_prime_new,error_a,error_a_prime,psi]);
-
-
 %% Gauss-Legendre
 A = [0.1,1.7]; % Interval
-n = 100;
-h = 1/n;
+N = 10;
+h = 1/N;
 X = [0.7746 0 -0.7746];
 W = [0.5556 0.8889 0.5556];
 L = A(2)-A(1);
-B = linspace(A(1),A(2),n);
+B = linspace(A(1),A(2),N);
 
-M = linspace(0,1,10);
-
-for j = 1 : length(M);
- V(j) = M(j)*sqrt(gamma*(p0/ro));
+M= 0.5;
+n = linspace(50,100,20);
+V = M*sqrt(gamma*(p0/ro));
+for j = 1 : length(n);
+   
  acc = 0;
  for i = 1 : length(B)-1
   alpha = (B(i+1)-B(i))/2;
   beta  = (B(i+1)+B(i))/2; 
-  T(j) =  alpha*( W(1)*fTprime( alpha*X(1) + beta,V(j)) + W(2)*fTprime( alpha*X(2) + beta,V(j)) + W(3)*fTprime( alpha*X(3) + beta,V(j))) + acc;
+  big_omega = n(j)*2.0*pi;
+  T(j) =  alpha*( W(1)*fTprime( alpha*X(1) + beta,V,big_omega) + W(2)*fTprime( alpha*X(2) + beta,V,big_omega) + W(3)*fTprime( alpha*X(3) + beta,V,big_omega)) + acc;
  end
+ J(j) = V/( n(j)*(pdata.R*2) );
+ kt(j) = T(j)/(pdata.ro*n(j)*n(j)*((2*pdata.R)^4)); 
 end
-J = V./(n*pdata.R*2);
-plot(J,T);
+
+plot(J,kt);
