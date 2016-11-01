@@ -5,7 +5,6 @@ global pdata;
 
 p_ref0 = 2*pi*0.75*pdata.R*tan(pdata.Beta0);
 Beta = atan(p_ref0/(2*pi*r));
-
 error_a       = 1; 
 error_a_prime = 1;
 
