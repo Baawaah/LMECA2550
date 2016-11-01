@@ -48,19 +48,20 @@ pdata.z          = 20000;
 pdata.B          = 4;
 pdata.chord      = 0.25;
 pdata.RPM        = 3000;
-pdata.omega      = 0.2;
-pdata.big_omega  = ((pdata.RPM)/60.0)*2.0*pi;;
+pdata.omega      = 0.3;
+pdata.n          = pdata.RPM/60.0;
+pdata.big_omega  = pdata.n*2.0*pi;
 pdata.Beta0      = 0.26;
 pdata.R          = 1.7;
  [p0,ro,T,gamma] = stdatm(pdata.z);
 pdata.V          = pdata.M*sqrt(gamma*(p0/ro));
 pdata.ro         = ro;
-pdata.a(1)       = 0.2;
-pdata.a_prime(1) = 0.2;
+pdata.a(1)       = 0.4;
+pdata.a_prime(1) = 0.4;
 % %% =============
-% % Sucre syntaxique
+% Sucre syntaxique
 % M               = pdata.M;
-% r               = pdata.r; %parameter
+% r               = 0.001; %parameter
 % z               = pdata.z;
 % omega           = pdata.omega; 
 % B               = pdata.B; % Number of Blade
@@ -102,15 +103,17 @@ pdata.a_prime(1) = 0.2;
 %     a_old = a_new;
 %     a_prime_old = a_prime_new;
 % end
-
+% 
 % disp('       a        a_p       err_a    err_a_p   psi');
 % disp([a_new,a_prime_new,error_a,error_a_prime,psi]);
 
 %% TEST ZONE 
-tspan = [0 10];
+n = pdata.n;
+D = 2*pdata.R;
+tspan = [0.1,R];
 r0 = 0.1;
-
 [r,y] = ode45(@(r,y) fprime(r), tspan, r0);
-
-
+T = sum(y)
+kt = T/(ro*n*n*(D^4));
+J = V/(n*D);
 
