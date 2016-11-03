@@ -44,7 +44,7 @@ pdata.a_prime(1) = 0.4;
 
 %% Gauss-Legendre
 A = [0.1,1.7]; % Interval
-N = 10;
+N = 4;
 h = 1/N;
 X = [0.7746 0 -0.7746];
 W = [0.5556 0.8889 0.5556];
@@ -64,9 +64,11 @@ kp = zeros(length(set),nNmax);
 np = zeros(length(set),nNmax);
 J  = zeros(length(set),nNmax);
 
-nNrange = [60 70 90 100 120 200];
-nrange = [ 45 150; 28 150; 19.3 150; 13.5 150; 9.4 150; 8.75471849 100];
-for k = 6 : length(set); 
+nNrange = [100 150 190 200 250 350];
+nrange = [ 45 150; 28 150; 19.3 150; 13.5 150; 9.4 150; 7.4 150]; %
+for k = 1 : length(set);
+  pdata.a = 0.2;
+  pdata.a_prime = 0.2;
   pdata.Beta0 = set(k);
   nN = nNrange(k);
   n = linspace(nrange(k,1),nrange(k,2),nN);
@@ -88,7 +90,7 @@ for j = 1 : length(n);
  kt(k,j) = T(k,j)/(pdata.ro*n(j)^2*((2*pdata.R)^4)); 
  kq(k,j) = Q(k,j)/(pdata.ro*n(j)^2*((2*pdata.R)^5));
  kp(k,j) = (Q(k,j)*big_omega)/(pdata.ro*n(j)^3*((2*pdata.R)^5));
- np(k,j) = J(k,j)*kt(k,j)/kq(k,j);
+ np(k,j) = J(k,j)*kt(k,j)/kp(k,j);
 end
 end
 
@@ -98,23 +100,23 @@ for k = 1 : length(set);
     subplot(2,2,1);
     plot(J(k,:),kt(k,:));
     title('kt');
-    axis([0 inf 0 inf])
+    axis([0 5 0 inf])
     legend('-DynamicLegend');
     hold on;
     subplot(2,2,2);
     plot(J(k,:),kq(k,:));
     title('kq');
-    axis([0 inf 0 inf])
+    axis([0 5 0 inf])
     hold on;
     subplot(2,2,3);
     plot(J(k,:),kp(k,:));
     title('kp');
-    axis([0 inf 0 inf])
+    axis([0 5 0 inf])
     hold on;
     subplot(2,2,4);
     plot(J(k,:),np(k,:));
     title('np');
-    axis([0 inf 0 inf])
+    axis([0 5 0 inf])
     hold on;
 end
 
