@@ -11,7 +11,7 @@ error_a       = 1;
 error_a_prime = 1;
 
 a_new = pdata.a(length(pdata.a));
-a_prime_new = pdata.a(length(pdata.a_prime));
+a_prime_new = pdata.a_prime(length(pdata.a_prime));
 
 % Iteration of a and a'
 while (abs(error_a) >= 0.0001) || (abs(error_a_prime) >= 0.0001)
@@ -36,7 +36,7 @@ while (abs(error_a) >= 0.0001) || (abs(error_a_prime) >= 0.0001)
     a_prime_old = a_prime_new;
 end
     pdata.a(length(pdata.a)+1)       = a_new;
-    pdata.a(length(pdata.a_prime)+1) = a_prime_new;
+    pdata.a_prime(length(pdata.a_prime)+1) = a_prime_new;
     a = a_new;
     a_prime = a_prime_new;
     
