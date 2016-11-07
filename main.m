@@ -28,7 +28,6 @@ clear all
 global pdata alphas_naca16_509_m06 cls_naca16_509_m06 cds_naca16_509_m06
 load 'naca16-509-m06_clcd.mat'
 
-
 pdata.M          = 0.5;
 pdata.z          = 20000;
 pdata.B          = 4;
@@ -64,7 +63,7 @@ kp = zeros(length(set),nNmax);
 np = zeros(length(set),nNmax);
 J  = zeros(length(set),nNmax);
 
-nNrange = [100 150 190 200 250 350];
+nNrange = [100 200 200 300 350 400];
 nrange = [ 45 350; 28 350; 19.3 350; 13.5 350; 9.4 350; 7.4 350]; %
 for k = 1 : length(set);
   pdata.a = 0.2;
@@ -104,25 +103,33 @@ end
 
 %% Plotting the result
 figure; 
-for k = 1 : length(set);
-    
-    subplot(2,2,1);
+for k = 1 : length(set);    
+    %subplot(2,2,1);
     plot(J(k,:),kt(k,:));
-    title('kt');
+    %title('kt');
     axis([0 5 0 inf])
     legend('15°','25°','35°','45°','55°', '62°');
     hold on;
-    subplot(2,2,2);
+end
+figure;
+for k = 1 : length(set);
+    %subplot(2,2,2);
     plot(J(k,:),kq(k,:));
-    title('kq');
+    %title('kq');
     axis([0 5 0 inf])
     hold on;
-    subplot(2,2,3);
+end    
+figure;
+for k = 1 : length(set);    
+    %subplot(2,2,3);
     plot(J(k,:),kp(k,:));
-    title('kp');
+    %title('kp');
     axis([0 5 0 inf])
     hold on;
-    subplot(2,2,4);
+end    
+figure;
+for k = 1 : length(set);    
+    %subplot(2,2,4);
     plot(J(k,:),np(k,:));
     title('np');
     axis([0 5 0 inf])
@@ -131,9 +138,13 @@ end
 %% Maximum speed
 P  = 1.118550*10^6; %Watt 
 nmotor = 49.9985;
-nvmax  = 10;%nmotor * 0.477;
- 
-A = [0.1,1.7]; % Interval
+nvmax  = nmotor * 0.477;
+kpvmax = P/(pdata.ro*nvmax*nvmax*nvmax*((pdata.R*2)^5)); 
+Jvmax = [0.15 0.55 1.03 1.64 2.43 3.71] %Founded via graph
+Vvmax = Jvmax *(nvmax*pdata.R*2);
+Mvmax = Vvmax/sqrt(gamma*(p0/ro));
+
+A = [0.1,1.7]; % Rayon de la palme
 N = 10;
 X = [0.7746 0 -0.7746];
 W = [0.5556 0.8889 0.5556];
@@ -144,13 +155,16 @@ M45 = linspace(0.01,1,nNmax);
 %Q2  = zeros(1,nNmax);
 pdata.a = 0.1;
 pdata.a_prime = 0.1;
-pdata.Beta0 = 45*(2*pi/360);
+pdata.Beta0 = 35*(2*pi/360);
 pdata.omega = 0.1;
+Tvmax = zeros(1,nNmax);
+Qvmax = zeros(1,nNmax);
 for j = 1 : length(M45);
   V = M45(j)*sqrt(gamma*(p0/ro));  
   Tvmax(j) = 0;
   Qvmax(j) = 0;
  for i = 1 : length(B)-1
+  % Calcule du Thrust par rapport au Mach   
   alpha = (B(i+1)-B(i))/2;
   beta  = (B(i+1)+B(i))/2; 
   big_omega = nvmax*2.0*pi;
@@ -161,7 +175,16 @@ for j = 1 : length(M45);
   Qvmax(j) =  alpha.*( W(1)*Q1 + W(2)*Q2 + W(3)*Q3) + Qvmax(j);
  end
 end
+Betavmax = zeros(1,length(B));
+for i = 1 : length(B)
+% Calcule de la distribution de beta0 en fonction du rayon.
+  Betavmax(i) = atan( 2*pi*0.75*pdata.R*tan(pdata.Beta0)/(2*pi*B(i)));
+end
 
+figure;
 plot(M45,Tvmax);
 axis([0 1 0 inf])
+figure;
+plot(B,Betavmax);
+
 %%
