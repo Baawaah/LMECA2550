@@ -15,7 +15,7 @@ c0 = sqrt(gamma*p0/rho);
 [~,~,~,~,~,cp] = stdatm(z); 
 %% Without losses
 M0 = 0.5;
-M = linspace(2,3.5,100);
+M = linspace(2,3.5,500);
 F_m0dot    = zeros(length(M),1);
 F_m0dotRAM = zeros(length(M),1);
 S          = zeros(length(M),1);
@@ -43,15 +43,20 @@ figure;
 hold on;
 plot(M,F_m0dot);
 plot(M,F_m0dotRAM);
+xlabel('Mach Number');
+ylabel('F/m0dot');
+legend('Turbojet mode','Ramjet mode')
 hold off;
 
 figure;
 hold on;
 plot(M,S);
 plot(M,Sram);
+xlabel('Mach Number');
+ylabel('Specific Fuel consumtion');
+legend('Turbojet mode','Ramjet mode')
 hold off;
 %% With losses
-%% Without losses
 M0 = 0.5;
 M = linspace(2,3.5,100);
 F_m0dot    = zeros(length(M),1);
